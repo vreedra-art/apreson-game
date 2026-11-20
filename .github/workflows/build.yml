@@ -18,21 +18,23 @@ jobs:
       with:
         python-version: '3.10'
 
+    # --- التخزين المؤقت (Caching) ---
     - name: Cache Buildozer global directory
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: buildozer-global-v8-${{ hashFiles('buildozer.spec') }}
+        key: buildozer-global-v9-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          buildozer-global-v8-
+          buildozer-global-v9-
 
     - name: Cache Buildozer local directory
       uses: actions/cache@v4
       with:
         path: .buildozer
-        key: buildozer-local-v8-${{ hashFiles('buildozer.spec') }}
+        key: buildozer-local-v9-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          buildozer-local-v8-
+          buildozer-local-v9-
+    # ---------------------------------
 
     - name: Fix spec filename and prepare entry
       run: |
@@ -42,7 +44,10 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf automake libtool libtool-bin pkg-config gettext zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
+        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip \
+          autoconf automake libtool libtool-bin pkg-config gettext \
+          zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev \
+          ant  # <--- تثبيت Ant محلياً
 
     - name: Install Buildozer and stable p4a
       run: |

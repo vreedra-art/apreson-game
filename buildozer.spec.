@@ -6,7 +6,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,json,ttf
 version = 1.0
 
-requirements = python3,kivy
+requirements = python3,kivy,libffi==3.4.4
 
 android.accept_sdk_license = True
 

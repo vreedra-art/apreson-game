@@ -23,17 +23,17 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: buildozer-global-v4-${{ hashFiles('buildozer.spec') }}
+        key: buildozer-global-v5-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          buildozer-global-v4-
+          buildozer-global-v5-
 
     - name: Cache Buildozer local directory
       uses: actions/cache@v4
       with:
         path: .buildozer
-        key: buildozer-local-v4-${{ hashFiles('buildozer.spec') }}
+        key: buildozer-local-v5-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          buildozer-local-v4-
+          buildozer-local-v5-
     # ---------------------------------
 
     - name: Fix spec filename and prepare entry
@@ -50,7 +50,6 @@ jobs:
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install buildozer cython
-        # تثبيت إصدار مستقر من p4a بدلاً من master
         python3 -m pip install git+https://github.com/kivy/python-for-android.git@release-2024.01.21
 
     - name: Build with Buildozer

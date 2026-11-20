@@ -6,20 +6,21 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,json,ttf
 version = 1.0
 
+# المتطلبات الأساسية فقط
 requirements = python3,kivy
 
-# قبول تراخيص أندرويد تلقائياً (مهم جداً)
+# قبول تراخيص أندرويد تلقائياً
 android.accept_sdk_license = True
 
+# إعدادات الشاشة
 orientation = landscape
 fullscreen = 0
 
+# إعدادات أندرويد (تم تعديل minapi إلى 24 لحل مشكلة التوافق)
 android.permissions = INTERNET
 android.api = 31
-android.minapi = 21
-android.ndk = 25b
+android.minapi = 24
 android.archs = arm64-v8a, armeabi-v7a
-
 android.allow_backup = True
 
 [buildozer]

@@ -1,25 +1,49 @@
+name: Build Kivy Android APK
 
-[app]
-title = APRESON ULTIMATE
-package.name = apreson
-package.domain = org.apreson
-source.dir = .
-source.include_exts = py,png,jpg,kv,atlas,json,ttf
-version = 1.0
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
 
-requirements = python3,kivy
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-orientation = landscape
-fullscreen = 0
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
 
-android.permissions = INTERNET
-android.api = 31
-android.minapi = 21
-android.ndk = 25b
-android.archs = arm64-v8a, armeabi-v7a
+    - name: Fix spec filename if needed
+      run: |
+        if [ -f "buildozer.spec." ]; then mv "buildozer.spec." "buildozer.spec"; fi
 
-android.allow_backup = True
+    - name: Prepare entry file
+      run: |
+        if [ -f "Aperson.py" ] && [ ! -f "main.py" ]; then
+          cp Aperson.py main.py
+        fi
 
-[buildozer]
-log_level = 2
-warn_on_root = 1
+    - name: Install System Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+
+    - name: Install Buildozer and Cython
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install --user buildozer cython
+
+    - name: Build with Buildozer
+      run: |
+        export PATH=$PATH:~/.local/bin
+        buildozer android debug
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: package
+        path: bin/*.apk

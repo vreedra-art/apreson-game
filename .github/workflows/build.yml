@@ -28,10 +28,13 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
 
-    - name: Install Buildozer and Cython
+    - name: Install Buildozer and latest p4a/kivy
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install buildozer cython
+        # تثبيت أحدث نسخة من python-for-android و kivy لحل مشكلة NDK
+        python3 -m pip install git+https://github.com/kivy/python-for-android.git
+        python3 -m pip install git+https://github.com/kivy/kivy.git
 
     - name: Build with Buildozer
       run: |

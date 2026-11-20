@@ -1,4 +1,4 @@
-name: Build Kivy APK Manual
+name: Build Kivy APK with Cache
 
 on:
   workflow_dispatch:
@@ -13,10 +13,28 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python
+    - name: Set up Python 3.11
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+
+    # --- بداية التخزين المؤقت (Caching) ---
+    - name: Cache Buildozer global directory
+      uses: actions/cache@v4
+      with:
+        path: ~/.buildozer
+        key: buildozer-global-${{ hashFiles('buildozer.spec') }}
+        restore-keys: |
+          buildozer-global-
+
+    - name: Cache Buildozer local directory
+      uses: actions/cache@v4
+      with:
+        path: .buildozer
+        key: buildozer-local-${{ hashFiles('buildozer.spec') }}
+        restore-keys: |
+          buildozer-local-
+    # --- نهاية التخزين المؤقت ---
 
     - name: Fix spec filename and prepare entry
       run: |
@@ -28,13 +46,12 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
 
-    - name: Install Buildozer and latest p4a/kivy
+    - name: Install Buildozer and latest p4a
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install buildozer cython
-        # تثبيت أحدث نسخة من python-for-android و kivy لحل مشكلة NDK
+        # تثبيت p4a فقط من المصدر (لأن Kivy سيتم تثبيته من PyPI كحزمة جاهزة)
         python3 -m pip install git+https://github.com/kivy/python-for-android.git
-        python3 -m pip install git+https://github.com/kivy/kivy.git
 
     - name: Build with Buildozer
       run: |

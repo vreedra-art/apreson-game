@@ -1,4 +1,4 @@
-name: Build Kivy APK with Cache
+name: Build APK on Stable Ubuntu
 
 on:
   workflow_dispatch:
@@ -7,7 +7,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # هذا هو السطر السحري: استخدام نسخة 22.04 المستقرة بدلاً من الأحدث
+    runs-on: ubuntu-22.04 
 
     steps:
     - name: Checkout code
@@ -18,42 +19,20 @@ jobs:
       with:
         python-version: '3.10'
 
-    # --- التخزين المؤقت (Caching) ---
-    - name: Cache Buildozer global directory
-      uses: actions/cache@v4
-      with:
-        path: ~/.buildozer
-        key: buildozer-global-v9-${{ hashFiles('buildozer.spec') }}
-        restore-keys: |
-          buildozer-global-v9-
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
 
-    - name: Cache Buildozer local directory
-      uses: actions/cache@v4
-      with:
-        path: .buildozer
-        key: buildozer-local-v9-${{ hashFiles('buildozer.spec') }}
-        restore-keys: |
-          buildozer-local-v9-
-    # ---------------------------------
-
-    - name: Fix spec filename and prepare entry
+    - name: Prepare files
       run: |
         if [ -f "buildozer.spec." ]; then mv "buildozer.spec." "buildozer.spec"; fi
         if [ -f "Aperson.py" ] && [ ! -f "main.py" ]; then cp Aperson.py main.py; fi
 
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip \
-          autoconf automake libtool libtool-bin pkg-config gettext \
-          zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev \
-          ant  # <--- تثبيت Ant محلياً
-
-    - name: Install Buildozer and stable p4a
+    - name: Install Buildozer
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install buildozer cython "sh>=1.10,<2.0"
-        python3 -m pip install git+https://github.com/kivy/python-for-android.git@release-2024.01.21
 
     - name: Build with Buildozer
       run: |

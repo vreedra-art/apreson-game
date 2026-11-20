@@ -23,17 +23,17 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: buildozer-global-v5-${{ hashFiles('buildozer.spec') }}
+        key: buildozer-global-v6-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          buildozer-global-v5-
+          buildozer-global-v6-
 
     - name: Cache Buildozer local directory
       uses: actions/cache@v4
       with:
         path: .buildozer
-        key: buildozer-local-v5-${{ hashFiles('buildozer.spec') }}
+        key: buildozer-local-v6-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          buildozer-local-v5-
+          buildozer-local-v6-
     # ---------------------------------
 
     - name: Fix spec filename and prepare entry
@@ -44,12 +44,21 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf automake libtool libtool-bin pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
+        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip \
+          autoconf automake libtool libtool-bin pkg-config gettext \
+          zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
+
+    - name: Pre-configure libtool macros
+      run: |
+        # إجبار النظام على تحديث ماكروز libtool لتفادي خطأ LT_SYS_SYMBOL_USCORE
+        sudo mkdir -p /usr/share/aclocal
+        sudo libtoolize --force --copy --install
+        sudo aclocal -I /usr/share/aclocal
 
     - name: Install Buildozer and stable p4a
       run: |
         python3 -m pip install --upgrade pip
-        python3 -m pip install buildozer cython
+        python3 -m pip install buildozer cython "sh>=1.10,<2.0"
         python3 -m pip install git+https://github.com/kivy/python-for-android.git@release-2024.01.21
 
     - name: Build with Buildozer

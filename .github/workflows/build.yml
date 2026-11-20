@@ -23,17 +23,17 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: buildozer-global-v3-${{ hashFiles('buildozer.spec') }}
+        key: buildozer-global-v4-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          buildozer-global-v3-
+          buildozer-global-v4-
 
     - name: Cache Buildozer local directory
       uses: actions/cache@v4
       with:
         path: .buildozer
-        key: buildozer-local-v3-${{ hashFiles('buildozer.spec') }}
+        key: buildozer-local-v4-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          buildozer-local-v3-
+          buildozer-local-v4-
     # ---------------------------------
 
     - name: Fix spec filename and prepare entry
@@ -44,15 +44,14 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        # أضفنا libtool-bin و automake لحل مشكلة libffi
         sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf automake libtool libtool-bin pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
 
-    - name: Install Buildozer and latest p4a
+    - name: Install Buildozer and stable p4a
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install buildozer cython
-        # تثبيت p4a من المصدر
-        python3 -m pip install git+https://github.com/kivy/python-for-android.git
+        # تثبيت إصدار مستقر من p4a بدلاً من master
+        python3 -m pip install git+https://github.com/kivy/python-for-android.git@release-2024.01.21
 
     - name: Build with Buildozer
       run: |

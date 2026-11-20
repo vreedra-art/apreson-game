@@ -13,28 +13,28 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python 3.11
+    - name: Set up Python 3.10
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.10'
 
-    # --- بداية التخزين المؤقت (Caching) ---
+    # --- التخزين المؤقت (Caching) ---
     - name: Cache Buildozer global directory
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: buildozer-global-${{ hashFiles('buildozer.spec') }}
+        key: buildozer-global-v3-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          buildozer-global-
+          buildozer-global-v3-
 
     - name: Cache Buildozer local directory
       uses: actions/cache@v4
       with:
         path: .buildozer
-        key: buildozer-local-${{ hashFiles('buildozer.spec') }}
+        key: buildozer-local-v3-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          buildozer-local-
-    # --- نهاية التخزين المؤقت ---
+          buildozer-local-v3-
+    # ---------------------------------
 
     - name: Fix spec filename and prepare entry
       run: |
@@ -44,13 +44,14 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
+        # أضفنا libtool-bin و automake لحل مشكلة libffi
+        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf automake libtool libtool-bin pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
 
     - name: Install Buildozer and latest p4a
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install buildozer cython
-        # تثبيت p4a فقط من المصدر (لأن Kivy سيتم تثبيته من PyPI كحزمة جاهزة)
+        # تثبيت p4a من المصدر
         python3 -m pip install git+https://github.com/kivy/python-for-android.git
 
     - name: Build with Buildozer

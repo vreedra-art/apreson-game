@@ -19,7 +19,7 @@ fullscreen = 0
 # إعدادات أندرويد (تم تعديل minapi إلى 24 لحل مشكلة التوافق)
 android.permissions = INTERNET
 android.api = 31
-android.minapi = 24
+android.minapi = 25
 android.archs = arm64-v8a, armeabi-v7a
 android.allow_backup = True
 
